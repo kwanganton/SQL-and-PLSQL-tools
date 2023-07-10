@@ -1,0 +1,4 @@
+begin
+util_audit.add_table_audit_trig
+( p_table_name => 'TABLE_NAME', p_action =>'EXECUTE');
+End;
