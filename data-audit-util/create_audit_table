@@ -1,0 +1,18 @@
+create table UTIL_AUDIT_RECORDS ( 
+        util_audit_record_id  number default on null to_number(sys_guid(),'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+                              constraint util_audit_records_id_pk primary key,
+        transaction_id        number,
+        table_name            varchar2(255),
+        pk_value              number,
+        column_name           varchar2(255),
+        data_type             varchar2(500),
+        transaction_type      varchar2(6) constraint util_audit_re_transaction_t_cc
+                              check (transaction_type in ('INSERT','UPDATE','DELETE')),
+        username              varchar2(500),
+        old_value             varchar2(4000),
+        new_value             varchar2(4000),
+        old_clob              clob,
+        new_clob              clob,
+        userenv               varchar2(4000),
+        audit_date            date
+);
