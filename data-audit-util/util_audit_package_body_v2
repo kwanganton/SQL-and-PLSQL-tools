@@ -164,7 +164,7 @@ create or replace PACKAGE BODY util_audit AS
     IF p_columns is null then 
     select  listagg(COLUMN_NAME,',') into v_columns
     from ALL_TAB_COLUMNS 
-     where TABLE_NAME= v_table_name
+     where TABLE_NAME= v_table_name and owner = user
      and upper(column_name) 
      not in (
      'CREATED',
