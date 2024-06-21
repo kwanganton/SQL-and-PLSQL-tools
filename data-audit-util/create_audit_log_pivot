@@ -1,0 +1,54 @@
+create or replace FUNCTION F_PIVOT_UTIL_AUDIT
+(
+  IN_TABLE IN VARCHAR2 ,
+  IN_PK IN NUMBER 
+) RETURN VARCHAR2 AS 
+
+  sqlqry clob;
+  v_columns clob;
+  
+begin
+
+/** get columns to pivot**/
+select  
+listagg(''''||COLUMN_NAME||''''|| ' as '||COLUMN_NAME, ',') 
+into v_columns
+    from ALL_TAB_COLUMNS 
+     where TABLE_NAME= IN_TABLE  
+     and owner = user
+     and upper(column_name) 
+     not in (
+     'CREATED',
+     'CREATED_ON',
+     'CREATED_BY',
+     'UPDATED',
+     'UPDATED_ON',
+     'UPDATED_BY',
+     'MODIFIED',
+     'MODIFIED_BY',
+     'MODIFIED_ON',
+     'ID') ;
+
+  sqlqry :=
+  ' select * from
+  (select
+transaction_id,
+COLUMN_NAME ,
+NEW_VALUE ,
+AUDIT_DATE ,
+pk_value
+from util_audit_records
+where TABLE_NAME='||''''||IN_TABLE||''''||
+' and pk_value ='||IN_PK||
+' )
+pivot(
+max(new_value)
+FOR column_name
+IN (
+'||v_columns||')
+)';
+
+
+  return sqlqry;
+
+END F_PIVOT_UTIL_AUDIT;
